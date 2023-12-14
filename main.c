@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
+#include "tadlista.h"
 
 void telaInicial(){
     printf("\t+-------------------------------------------------+\n");
@@ -22,54 +24,82 @@ void telaInicial(){
 }
 
 void telaCadastro(){
+    tl l;
     int opt, cod, qtd;
     char prod[30];
     float prc;
 
+    iniciaLista(&l);
+
+    system("cls");
+    printf("Insira o codigo do produto:\n> ");
+    scanf("%d", &cod);
+    printf("Insira o nome do produto:\n> ");
+    scanf(" %[^\n]", prod);
+    printf("Insira o preco do produto:\n> ");
+    scanf("%f", &prc);
+    printf("Insira a quantidade em estoque:\n> ");
+    scanf("%d", &qtd);
+    printf("\n\nInsira uma operacao:\n");
+    printf("[1] - Salvar e sair\n");
+    printf("[2] - Descartar e sair\n");
+    printf("[3] - Cadastrar outro produto\n\n");
+
     do{
-        system("cls");
-        printf("Insira o codigo do produto:\n> ");
-        scanf("%d", &cod);
-        printf("Insira o nome do produto:\n> ");
-        scanf(" %[^\n]", prod);
-        printf("Insira o preco do produto:\n> ");
-        scanf("%f", &prc);
-        printf("Insira a quantidade em estoque:\n> ");
-        scanf("%d", &qtd);
-
-        printf("\n\nInsira uma operacao:\n");
-        printf("[1] - Salvar e sair\n");
-        printf("[2] - Descartar e sair\n");
-        printf("[3] - Cadastrar outro produto\n\n> ");
+        printf("> ");
         scanf("%d", &opt);
-
+        
         switch(opt){
             case 1:
+                if(insereLista(&l, cod, qtd, prod, prc) != 1){
+                    printf("Error! Falha ao cadastrar\n");
+                    return;
+                }
                 return;
             
             case 2:
-                printf("Descartado\n");
+                printf("Cadastro descartado\n");
+                Sleep(2000);
                 return;
 
             case 3:
+                if(insereLista(&l, cod, qtd, prod, prc) != 1){
+                    printf("Error! Falha ao cadastrar\n");
+                    return;
+                }
+                system("cls");
+                printf("Insira o codigo do produto:\n> ");
+                scanf("%d", &cod);
+                printf("Insira o nome do produto:\n> ");
+                scanf(" %[^\n]", prod);
+                printf("Insira o preco do produto:\n> ");
+                scanf("%f", &prc);
+                printf("Insira a quantidade em estoque:\n> ");
+                scanf("%d", &qtd);
+                printf("\n\nInsira uma operacao:\n");
+                printf("[1] - Salvar e sair\n");
+                printf("[2] - Descartar e sair\n");
+                printf("[3] - Cadastrar outro produto\n\n");
                 break;
 
             default:
                 printf("Error! Operacao invalida\n");
+                Sleep(2000);
                 break;
         }
 
-    } while(opt != 1);
+    } while((opt != 1) || (opt != 2));
 
     return;
 }
 
 int main(){
     int opt;
+    
+    system("cls");
+    telaInicial();
 
     do{
-        system("cls");
-        telaInicial();
         printf("> ");
         scanf("%d", &opt);
 
@@ -99,8 +129,12 @@ int main(){
 
         default:
             printf("Error! Operacao invalida\n");
+            Sleep(2000);
             break;
         }
+
+        system("cls");
+        telaInicial();
         
     } while(opt != 6);
 
