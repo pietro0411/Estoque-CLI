@@ -21,17 +21,61 @@ void telaInicial(){
     return;
 }
 
-int main(){
-    int opt;
-    telaInicial();
+void telaCadastro(){
+    int opt, cod, qtd;
+    char prod[30];
+    float prc;
 
     do{
+        system("cls");
+        printf("Insira o codigo do produto:\n> ");
+        scanf("%d", &cod);
+        printf("Insira o nome do produto:\n> ");
+        scanf(" %[^\n]", prod);
+        printf("Insira o preco do produto:\n> ");
+        scanf("%f", &prc);
+        printf("Insira a quantidade em estoque:\n> ");
+        scanf("%d", &qtd);
+
+        printf("\n\nInsira uma operacao:\n");
+        printf("[1] - Salvar e sair\n");
+        printf("[2] - Descartar e sair\n");
+        printf("[3] - Cadastrar outro produto\n\n> ");
+        scanf("%d", &opt);
+
+        switch(opt){
+            case 1:
+                return;
+            
+            case 2:
+                printf("Descartado\n");
+                return;
+
+            case 3:
+                break;
+
+            default:
+                printf("Error! Operacao invalida\n");
+                break;
+        }
+
+    } while(opt != 1);
+
+    return;
+}
+
+int main(){
+    int opt;
+
+    do{
+        system("cls");
+        telaInicial();
         printf("> ");
         scanf("%d", &opt);
 
         switch (opt){
         case 1:
-            printf("\tCadastrar\n");
+            telaCadastro();
             break;
         
         case 2:
@@ -60,5 +104,7 @@ int main(){
         
     } while(opt != 6);
 
+    system("cls");
+    
     return 0;
 }
