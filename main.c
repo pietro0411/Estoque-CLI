@@ -1,37 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <windows.h>
 #include "tadlista.h"
 
-void telaInicial(){
-    printf("\t+-------------------------------------------------+\n");
-    printf("\t\t _____     _                         \n");
-    printf("\t\t| ____|___| |_ ___   __ _ _   _  ___ \n");
-    printf("\t\t|  _| / __| __/ _ \\ / _` | | | |/ _ \\\n");
-    printf("\t\t| |___\\__ \\ || (_) | (_| | |_| |  __/\n");
-    printf("\t\t|_____|___/\\__\\___/ \\__, |\\__,_|\\___|\n");
-    printf("\t\t                       |_|           \n");
-    printf("\t+-------------------------------------------------+\n\n");
+typedef struct produto{
+    int cod;
+    int qtd;
+    char prod[30];
+    float prc;
+} tp;
+
+void telaMenu(){
+    printf("\t\t+-------------------------------------------------+\n");
+    printf("\t\t\t _____     _                         \n");
+    printf("\t\t\t| ____|___| |_ ___   __ _ _   _  ___ \n");
+    printf("\t\t\t|  _| / __| __/ _ \\ / _` | | | |/ _ \\\n");
+    printf("\t\t\t| |___\\__ \\ || (_) | (_| | |_| |  __/\n");
+    printf("\t\t\t|_____|___/\\__\\___/ \\__, |\\__,_|\\___|\n");
+    printf("\t\t\t                       |_|           \n");
+    printf("\t\t+-------------------------------------------------+\n\n");
 
     printf("Insira uma operacao:\n");
-    printf("[1] - Cadastrar\n");
-    printf("[2] - Editar\n");
-    printf("[3] - Remover\n");
-    printf("[4] - Buscar\n");
-    printf("[5] - Listar\n");
-    printf("[6] - Sair\n\n");
+    printf("\t[1] - Cadastrar\n");
+    printf("\t[2] - Editar\n");
+    printf("\t[3] - Remover\n");
+    printf("\t[4] - Buscar\n");
+    printf("\t[5] - Listar\n");
+    printf("\t[6] - Sair\n\n");
     return;
 }
 
-void telaCadastro(){
-    tl l;
-    int opt, cod, qtd;
+void telaCadastrar(tl *l){
+    int opt, cod, qtd, ret;
     char prod[30];
     float prc;
 
-    iniciaLista(&l);
-
     system("cls");
+    printf("+-------------------------------------------------+\n");
     printf("Insira o codigo do produto:\n> ");
     scanf("%d", &cod);
     printf("Insira o nome do produto:\n> ");
@@ -40,7 +46,8 @@ void telaCadastro(){
     scanf("%f", &prc);
     printf("Insira a quantidade em estoque:\n> ");
     scanf("%d", &qtd);
-    printf("\n\nInsira uma operacao:\n");
+    printf("+-------------------------------------------------+\n");
+    printf("\nInsira uma operacao:\n");
     printf("[1] - Salvar e sair\n");
     printf("[2] - Descartar e sair\n");
     printf("[3] - Cadastrar outro produto\n\n");
@@ -51,9 +58,14 @@ void telaCadastro(){
         
         switch(opt){
             case 1:
-                if(insereLista(&l, cod, qtd, prod, prc) != 1){
+                ret = insereLista(l, cod, qtd, prod, prc);
+                if(ret != 1){
                     printf("Error! Falha ao cadastrar\n");
                     return;
+                }
+                else{
+                    printf("Produto cadastrado com sucesso\n");
+                    Sleep(1000);
                 }
                 return;
             
@@ -63,11 +75,17 @@ void telaCadastro(){
                 return;
 
             case 3:
-                if(insereLista(&l, cod, qtd, prod, prc) != 1){
+                ret = insereLista(l, cod, qtd, prod, prc);
+                if(ret != 1){
                     printf("Error! Falha ao cadastrar\n");
                     return;
                 }
+                else{
+                    printf("Produto cadastrado com sucesso\n");
+                    Sleep(1000);
+                }
                 system("cls");
+                printf("+-------------------------------------------------+\n");
                 printf("Insira o codigo do produto:\n> ");
                 scanf("%d", &cod);
                 printf("Insira o nome do produto:\n> ");
@@ -76,7 +94,8 @@ void telaCadastro(){
                 scanf("%f", &prc);
                 printf("Insira a quantidade em estoque:\n> ");
                 scanf("%d", &qtd);
-                printf("\n\nInsira uma operacao:\n");
+                printf("+-------------------------------------------------+\n");
+                printf("\nInsira uma operacao:\n");
                 printf("[1] - Salvar e sair\n");
                 printf("[2] - Descartar e sair\n");
                 printf("[3] - Cadastrar outro produto\n\n");
@@ -93,11 +112,86 @@ void telaCadastro(){
     return;
 }
 
+void telaRemover(tl *l){
+    int cod, ret;
+
+    system("cls");
+    printf("+-------------------------------------------------+\n");
+    printf("Insira o codigo do produto:\n> ");
+    scanf("%d", &cod);
+
+    ret = removeLista(l, cod);
+
+    if(ret == 1){
+        printf("Produto removido com sucesso\n");
+        Sleep(1000);
+    }
+    else{
+        printf("Error! Falha ao remover o produto\n");
+        Sleep(1000);
+    }
+
+    return;
+}
+
+void lerArquivo(tl *l){
+    FILE *arq;
+    tp buffer;
+
+    arq = fopen("data.dat", "rb");
+
+    fread(&buffer, sizeof(tp), 1, arq);
+    while(!feof(arq)){
+        insereLista(l, buffer.cod, buffer.qtd, buffer.prod, buffer.prc);
+        fread(&buffer, sizeof(tp), 1, arq);
+    }
+
+    fclose(arq);
+
+    return;
+}
+
+void salvarArquivo(tl l){
+    FILE *arq;
+    tp buffer;
+    tno *no;
+    no = l.com;
+
+    arq = fopen("data.dat", "wb");
+    while(no != NULL){
+        buffer.cod = no->cod;
+        buffer.qtd = no->qtd;
+        buffer.prc = no->prc;
+        strcpy(buffer.prod, no->prod);
+        fwrite(&buffer, sizeof(buffer), 1, arq);
+        no = no->prox;
+    }
+
+    fclose(arq);
+    return;
+}
+
 int main(){
     int opt;
+    tl l;
+    tp buffer;
+    FILE *arq;
+    iniciaLista(&l);
+
+    arq = fopen("data.dat", "ab+");
     
+    if(arq == NULL){
+        printf("Error! Falha ao abrir o arquivo\n");
+        return -1;
+    }
+
+    if(fread(&buffer, sizeof(tp), 1, arq)){
+        lerArquivo(&l);
+    }
+
+    fclose(arq);
     system("cls");
-    telaInicial();
+    telaMenu();
 
     do{
         printf("> ");
@@ -105,7 +199,8 @@ int main(){
 
         switch (opt){
         case 1:
-            telaCadastro();
+            telaCadastrar(&l);
+            system("cls");
             break;
         
         case 2:
@@ -113,7 +208,8 @@ int main(){
             break;
         
         case 3:
-            printf("\tRemover\n");
+            telaRemover(&l);
+            system("cls");
             break;
         
         case 4:
@@ -121,7 +217,7 @@ int main(){
             break;
         
         case 5:
-            printf("\tListar\n");
+            imprimeLista(l);
             break;
         
         case 6:
@@ -130,14 +226,15 @@ int main(){
         default:
             printf("Error! Operacao invalida\n");
             Sleep(2000);
+            system("cls");
             break;
         }
 
-        system("cls");
-        telaInicial();
+        telaMenu();
         
     } while(opt != 6);
 
+    salvarArquivo(l);
     system("cls");
     
     return 0;
